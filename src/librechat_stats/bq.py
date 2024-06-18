@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 
+from .errors import BigQueryError
+
 logger = logging.getLogger(__name__)
 
 
@@ -164,7 +166,7 @@ class Bq:
                 case {"errors": errors}:
                     if errors:
                         msg = f"Error inserting rows: {errors}"
-                        raise Exception(msg)
+                        raise BigQueryError(msg)
 
     def insert_rows_json(self, table_name: str, rows: list[dict]) -> None:
         table = self.client.get_table(self.table(table_name))
@@ -175,7 +177,7 @@ class Bq:
                 case {"errors": errors}:
                     if errors:
                         msg = f"Error inserting rows: {errors}"
-                        raise Exception(msg)
+                        raise BigQueryError(msg)
 
     @memoized_method(maxsize=1000)
     def get_table(self, table_id: str) -> bigquery.Table:
@@ -187,13 +189,13 @@ class Bq:
         if not items:
             return
 
-        temp_table_name = f"{table}_temp_{int(datetime.now().timestamp())}"
+        temp_table_name = f"{table}_temp_{int(datetime.now(timezone.utc).timestamp())}"
         temp_table = bigquery.Table(self.table(temp_table_name))
         temp_table.schema = self.get_table(table).schema
         self.client.create_table(temp_table)
 
         try:
-            rows = [asdict(item) for item in items]
+            rows = [asdict(item) for item in items]  # type: ignore
             self.insert_rows(temp_table_name, rows)
 
             merge_sql = f"""

@@ -51,7 +51,8 @@ class Config:
             missing.append("GOOGLE_APPLICATION_CREDENTIALS")
 
         if missing:
-            raise ValueError(f"Missing environment variables: {', '.join(missing)}")
+            msg = f"Missing environment variables: {', '.join(missing)}"
+            raise ValueError(msg)
 
         return cls(**kwargs)
 
@@ -59,9 +60,7 @@ class Config:
 @contextmanager
 def action(title: str):
     try:
-        with live.Live(
-            Spinner("dots2", title), refresh_per_second=12, transient=True
-        ) as spinner:
+        with live.Live(Spinner("dots2", title), refresh_per_second=12, transient=True):
             yield
 
         print(f"✅ {title}")
