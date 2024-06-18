@@ -2,15 +2,16 @@ import os
 import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
-from rich import print, live
+from rich import live, print
+from rich.console import Console
 from rich.spinner import Spinner
 
-from .mongo import LibreChatMongo
 from .bq import Bq
-from rich.console import Console
+from .mongo import LibreChatMongo
+
 console = Console()
 
 
@@ -46,8 +47,8 @@ class Config:
             elif req:
                 missing.append(env_var)
 
-        if not os.getenv('GOOGLE_APPLICATION_CREDENTIALS'):
-            missing.append('GOOGLE_APPLICATION_CREDENTIALS')
+        if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+            missing.append("GOOGLE_APPLICATION_CREDENTIALS")
 
         if missing:
             raise ValueError(f"Missing environment variables: {', '.join(missing)}")
@@ -58,12 +59,14 @@ class Config:
 @contextmanager
 def action(title: str):
     try:
-        with live.Live(Spinner('dots2', title), refresh_per_second=12, transient=True) as spinner:
+        with live.Live(
+            Spinner("dots2", title), refresh_per_second=12, transient=True
+        ) as spinner:
             yield
 
-        print(f'✅ {title}')
+        print(f"✅ {title}")
     except Exception:
-        print(f'❌ {title}')
+        print(f"❌ {title}")
         raise
 
 
@@ -76,19 +79,22 @@ def main():
         dataset_location=config.gcp_dataset_location,
     )
 
-    with action('Migrate BigQuery'):
+    with action("Migrate BigQuery"):
         bq.migrate()
 
     start = datetime.now(timezone.utc) - timedelta(days=config.since_days)
 
     with action("Copy messages"):
-        bq.upsert('message', mongo.get_messages(start))
+        bq.upsert("message", mongo.get_messages(start))
 
     with action("Copy transactions"):
-        bq.upsert('transaction', mongo.get_transactions(start))
+        bq.upsert("transaction", mongo.get_transactions(start))
 
     with action("Copy conversations"):
-        bq.upsert('conversation', mongo.get_conversations(start))
+        bq.upsert("conversation", mongo.get_conversations(start))
+
+    with action("Copy users"):
+        bq.upsert("user", mongo.get_users(start))
 
 
 def __main__():

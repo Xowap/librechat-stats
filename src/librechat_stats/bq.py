@@ -144,6 +144,17 @@ class Bq:
         self.client.create_table(conversation_table)
         logger.info("Table conversation created")
 
+    def migration_0002(self):
+        """Create table for User."""
+        user_table = bigquery.Table(self.table("user"))
+        user_table.schema = [
+            bigquery.SchemaField("id", "STRING", mode="REQUIRED"),
+            bigquery.SchemaField("created_at", "TIMESTAMP", mode="REQUIRED"),
+            bigquery.SchemaField("domain", "STRING", mode="REQUIRED"),
+        ]
+        self.client.create_table(user_table)
+        logger.info("Table user created")
+
     def insert_rows(self, table_name: str, rows: list[dict]) -> None:
         table = self.client.get_table(self.table(table_name))
         out = self.client.insert_rows(table, rows)

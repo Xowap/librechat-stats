@@ -3,7 +3,14 @@ from datetime import datetime
 
 import pymongo
 
-from .models import Conversation, Message, Transaction
+from .models import Conversation, Message, Transaction, User
+
+
+def guess_domain(email: str | None) -> str:
+    if email and "@" in email:
+        return email.split("@")[1]
+
+    return "<unknown>"
 
 
 @dataclass
@@ -38,10 +45,10 @@ class LibreChatMongo:
             Transaction(
                 id=str(transaction["_id"]),
                 user_id=str(transaction["user"]),
-                conversation_id=transaction.get('conversationId', '') or '',
+                conversation_id=transaction.get("conversationId", "") or "",
                 context=transaction["context"],
                 date=transaction["createdAt"],
-                model=transaction['model'],
+                model=transaction["model"],
                 pricing_type=transaction["tokenType"],
                 token_count=transaction["rawAmount"] * -1,
                 usd_per_million=transaction["rate"],
@@ -60,4 +67,14 @@ class LibreChatMongo:
                 model=conversation["model"],
             )
             for conversation in self.get_collection("conversations", since)
+        ]
+
+    def get_users(self, since: datetime) -> list[User]:
+        return [
+            User(
+                id=str(user["_id"]),
+                created_at=user["createdAt"],
+                domain=guess_domain(user.get("email")),
+            )
+            for user in self.get_collection("users", since)
         ]

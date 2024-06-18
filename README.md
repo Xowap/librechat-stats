@@ -4,8 +4,7 @@ This project will export statistics from LibreChat into a BigQuery database.
 
 The environment variables that need to be set are:
 
--   `MONGODB_URL` &mdash; URL to LibreChat's MongoDB database (more on that
-    later)
+-   `MONGODB_URL` &mdash; URL to LibreChat's MongoDB database
 -   `GCP_PROJECT` &mdash; Google Cloud Platform project ID
 -   `GCP_DATASET_ID` &mdash; BigQuery dataset ID (will be created automatically
     if not present)
@@ -17,22 +16,6 @@ In addition, the following variables are available:
 -   `SINCE_DAYS` &mdash; Number of days to go back in time when exporting
     statistics (default: `2`)
 -   `GCP_DATASET_LOCATION` &mdash; BigQuery dataset location (default: `EU`)
-
-## Connecting to LibreChat's Mongo
-
-Of course this depends on how you installed it. But for example if you used the
-Docker Compose method, you can add to your `docker-compose.override.yml`:
-
-```yaml
-services:
-    mongodb:
-        ports:
-            - 27018:27017
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
-```
-
-And then you can connect to `mongodb://host.docker.internal:27018/LibreChat`.
 
 ## Running the exporter
 
@@ -52,12 +35,13 @@ to your `docker-compose.override.yml`:
 ```yaml
 services:
     librechat-stats:
+        container_name: stats
         build:
             context: ../librechat-stats
             dockerfile: Dockerfile
         environment:
-            MONGODB_URL: "mongodb://host.docker.internal:27018/LibreChat"
-            GCP_PROJECT: "your-gcp-project-id"
+            MONGODB_URL: "mongodb://mongodb:27017/LibreChat"
+            GCP_PROJECT_ID: "your-gcp-project-id"
             GCP_DATASET_ID: "your-bigquery-dataset-id"
             GOOGLE_APPLICATION_CREDENTIALS: "service-account.json"
         volumes:

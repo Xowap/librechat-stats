@@ -19,7 +19,7 @@ class Transaction:
     id: str
     user_id: str
     conversation_id: str
-    context: Literal['message', 'title']
+    context: Literal["message", "title"]
     date: datetime
     model: str
     pricing_type: Literal["completion", "prompt"]
@@ -35,3 +35,10 @@ class Conversation:
     date: datetime
     endpoint: str
     model: str
+
+
+@dataclass(kw_only=True)
+class User:
+    id: str
+    created_at: datetime
+    domain: str
