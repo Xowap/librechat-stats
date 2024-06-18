@@ -1,0 +1,10 @@
+# The project itself
+-e .
+
+# Dev dependencies
+ruff
+mypy
+
+# Tests
+pytest
+pytest-asyncio

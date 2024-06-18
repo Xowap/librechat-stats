@@ -1,0 +1,106 @@
+[tool.poetry]
+name = "librechat_stats"
+version = "0.1.0"
+description = "Meta DigitalOcean management"
+authors = ["Rémy Sanchez <remy.sanchez@hyperthese.net>"]
+license = "WTFPL"
+readme = "README.md"
+packages = [{include = "librechat_stats", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+keyring = "*"
+google-cloud-bigquery = "*"
+pymongo = "*"
+python-dotenv = "*"
+rich = "*"
+
+[tool.ruff]
+src = ["src", "test"]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # McCabe Complexity
+    "C90",
+    # Async
+    "ASYNC",
+    # Bandit
+    "S",
+    # Builtins
+    "A",
+    # Comprehensions
+    "C4",
+    # Datetime
+    "DTZ",
+    # Debugger
+    "T10",
+    # Error Messages
+    "EM",
+    # Executable (just in case)
+    "EXE",
+    # Logging
+    "G",
+    # PEP 420
+    "INP",
+    # No print
+    "T20",
+    # Pytest
+    "PT",
+    # Return style
+    "RET",
+    # Private member access
+    "SLF",
+    # Slots
+    "SLOT",
+    # Simplify
+    "SIM",
+    # Clean imports
+    "TID",
+    # Type checking blocks
+    "TCH",
+    # Use pathlib pedantism
+    "PTH",
+    # Don't allow TODO in code
+    "FIX",
+    # Don't comment code
+    "ERA",
+    # Exception anti-patterns
+    "TRY",
+    # Performance anti-patterns
+    "PERF",
+    # Ruff stuff
+    "RUF",
+]
+ignore = [
+    "ANN101",
+    "ANN102",
+    "ANN401",
+    "TRY003",
+    "C408",
+    "D401",
+    "SIM108",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = ["ANN", "D", "S", "INP", "SLF001"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

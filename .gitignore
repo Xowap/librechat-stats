@@ -1,0 +1,10 @@
+.idea/
+.vscode/
+.venv/
+.env
+*.un~
+*.swp
+*.pyc
+*.sqlite3
+.python-version
+service-account.json

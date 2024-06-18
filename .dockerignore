@@ -1,0 +1,6 @@
+.venv/
+**/*.pyc
+**/*.swp
+**/*.un~
+**/.idea
+**/.vscode
